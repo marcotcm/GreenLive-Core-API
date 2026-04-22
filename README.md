@@ -8,7 +8,7 @@ El backend se encuentra en una fase avanzada de implementación del núcleo de s
 **Funcionalidades Clave Implementadas:**
 * **Autenticación Dual:** Rutas de login independientes para Clientes y Empleados bajo el estándar OAuth2.
 * **Seguridad Robusta:** Encriptación de contraseñas mediante `Bcrypt` y gestión de sesiones con `JSON Web Tokens (JWT)`.
-* **RBAC (Role-Based Access Control):** Sistema de dependencias ("Porteros") para restringir el acceso a rutas según el perfil del usuario.
+* **RBAC (Role-Based Access Control):** Sistema de dependencias ("Porteros") para restringir el acceso a rutas según el perfil del usuario (En proceso).
 * **Gestión de Identidad:** CRUD completo de usuarios con soporte para borrado lógico y recuperación de contraseñas mediante tokens temporales.
 
 ## Tecnologías Utilizadas
