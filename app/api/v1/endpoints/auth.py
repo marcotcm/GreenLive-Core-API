@@ -3,20 +3,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
-
 from app.db.session import get_db
 from app.crud.usuarios import CrudUsuario
 from app.core.security import verify_password, create_access_token, get_password_hash
 from app.core.config import settings
-
-# Importamos nuestros esquemas desde el nuevo archivo de schemas
 from app.schemas.auth import Token, ForgotPassword, ResetPassword
 
 router = APIRouter()
 
-# ==========================================
-# RUTAS DE LOGIN
-# ==========================================
+
 
 @router.post("/cliente/login", response_model=Token)
 async def login_cliente(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
@@ -51,9 +46,7 @@ async def login_empleado(form_data: OAuth2PasswordRequestForm = Depends(), db: A
     access_token = create_access_token(subject=user.usuario_id)
     return {"access_token": access_token, "token_type": "bearer"}
 
-# ==========================================
-# RUTAS DE RECUPERACIÓN DE CONTRASEÑA
-# ==========================================
+
 
 @router.post("/olvide-password", status_code=status.HTTP_200_OK)
 async def solicitar_recuperacion(data: ForgotPassword, db: AsyncSession = Depends(get_db)):
@@ -69,7 +62,7 @@ async def solicitar_recuperacion(data: ForgotPassword, db: AsyncSession = Depend
     
     # SIMULACIÓN DE ENVÍO DE CORREO
     print(f"\n{'='*50}")
-    print(f"📧 EMAIL SIMULADO PARA: {data.email}")
+    print(f"EMAIL SIMULADO PARA: {data.email}")
     print(f"Haz clic aquí para recuperar tu contraseña:")
     print(f"http://localhost:8000/resetear?token={reset_token}")
     print(f"{'='*50}\n")
@@ -79,7 +72,7 @@ async def solicitar_recuperacion(data: ForgotPassword, db: AsyncSession = Depend
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def resetear_password(data: ResetPassword, db: AsyncSession = Depends(get_db)):
-    # 1. Analizamos el Token
+    #Analizamos el Token
     try:
         payload = jwt.decode(data.token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         usuario_id: str = payload.get("sub")
@@ -88,12 +81,12 @@ async def resetear_password(data: ResetPassword, db: AsyncSession = Depends(get_
     except JWTError:
         raise HTTPException(status_code=400, detail="El enlace es inválido o ha expirado")
         
-    # 2. Buscamos al usuario revelado por el token
+    #Buscamos al usuario revelado por el token
     user = await CrudUsuario.get_by_id(db, usuario_id)
     if not user or user.deleted_at is not None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado o inactivo")
         
-    # 3. Encriptamos la clave nueva y la guardamos
+    #Encriptamos la clave nueva y la guardamos
     user.password = get_password_hash(data.nueva_password)
     db.add(user)
     await db.commit()

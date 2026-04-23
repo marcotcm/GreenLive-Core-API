@@ -19,7 +19,6 @@ class ClienteOut(BaseModel):
     puntos_lealtad: int
     total_compras: int
     tipo_cliente: str
-    # AQUÍ ESTÁ LA MAGIA: Pydantic sabe cómo mapear el objeto 'usuario'
     usuario: UsuarioOut 
 
     model_config = ConfigDict(from_attributes=True)

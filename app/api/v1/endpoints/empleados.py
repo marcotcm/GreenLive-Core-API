@@ -37,7 +37,7 @@ async def update_empleado(id: str, data: EmpleadoUpdate, db: AsyncSession = Depe
 
 @router.patch("/activate/{id}/{active}", response_model=dict, status_code=200)
 async def activate_empleado(id: str, active: bool, db: AsyncSession = Depends(get_db)):
-    # Nota: la lógica de activación/desactivación es idéntica ya que recae sobre el Usuario
+   
     if active:
         e = await UsuarioService.activate(db, id)
     else:

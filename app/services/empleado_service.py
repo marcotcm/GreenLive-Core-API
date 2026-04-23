@@ -17,7 +17,7 @@ class EmpleadoService:
     async def create(db: AsyncSession, data: EmpleadoCreate):
         """Crea o vincula un empleado a un usuario existente."""
     
-        # 1. Verificamos si el usuario ya existe
+        # Verificamos si el usuario ya existe
         user_data = await get_user_roles_data(db, data.email)
     
         if user_data:
@@ -28,17 +28,17 @@ class EmpleadoService:
             # Recuperamos la instancia del usuario para vincular
             user = await CrudUsuario.get_by_id(db, user_data["usuario_id"])
         else:
-            # 2. Si no existe, creamos el usuario desde cero
+            #Si no existe, creamos el usuario desde cero
             user_dict = data.model_dump(include=set(UsuarioCreate.model_fields.keys()))
             user_dict["password"] = get_password_hash(data.password)
             user = await CrudUsuario.create(db, user_dict)
     
-        # 3. Creamos el perfil de Empleado vinculado al ID (sea nuevo o existente)
+        #Creamos el perfil de Empleado vinculado al ID (sea nuevo o existente)
         empleado_dict = data.model_dump(exclude=set(UsuarioCreate.model_fields.keys()))
         empleado_dict["empleado_id"] = user.usuario_id
         new_empleado = await CrudEmpleado.create(db, empleado_dict)
     
-        # 4. Finalizar transacción
+        # Finalizar transacción
         await db.commit()
     
         # Refresh para asegurar que la relación 'usuario' esté cargada

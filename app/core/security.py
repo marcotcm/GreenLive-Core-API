@@ -6,13 +6,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 
-# 1. Configuración del esquema de seguridad y contraseñas
+# Configuración del esquema de seguridad y contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/cliente/login")
 
-# ==========================================
 # FUNCIONES DE CONTRASEÑA
-# ==========================================
 
 def get_password_hash(password: str) -> str:
     """Encripta la contraseña para guardarla en la base de datos."""
@@ -22,9 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Compara la contraseña ingresada con la encriptada."""
     return pwd_context.verify(plain_password, hashed_password)
 
-# ==========================================
 # FUNCIONES DE TOKEN
-# ==========================================
 
 def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
     """Genera el JSON Web Token (JWT) con expiración configurable."""
@@ -36,13 +32,11 @@ def create_access_token(subject: Union[str, Any], expires_delta: timedelta = Non
     to_encode = {"exp": expire, "sub": str(subject)}
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
-# ==========================================
 # VALIDADOR DE RUTAS PROTEGIDAS
-# ==========================================
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     """
-    Úsalo en tus rutas así: async def mi_ruta(user_id: str = Depends(get_current_user))
+    Úsar en rutas así: async def mi_ruta(user_id: str = Depends(get_current_user))
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
